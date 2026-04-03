@@ -1,4 +1,4 @@
-# 🔐 ICS344 - DVSA Information Security Project
+# 🔐 ICS344 - DVSA Vulnerability Discovery and Remediation
 
 ## 👩‍💻 Team Members
 - Alanoud Fahad Aldaej (202279560)  
