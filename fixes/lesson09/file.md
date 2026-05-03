@@ -1,38 +1,38 @@
-# Lesson 10: Unhandled Exceptions
+# Lesson 9: Vulnerable Dependencies
 
 ## Before
 
 ```js
+const serialize = require('node-serialize');
+const { LambdaClient, InvokeCommand } = require("@aws-sdk/client-lambda");
+const { CognitoIdentityProviderClient, AdminGetUserCommand } = require("@aws-sdk/client-cognito-identity-provider");
+const jose = require('node-jose');
+
 exports.handler = (event, context, callback) => {
-    var req = JSON.parse(event.body);
-    var headers = event.headers;
+    // console.log(JSON.stringify(event));
+    var req = serialize.unserialize(event.body);
+    var headers = serialize.unserialize(event.headers);
 }
-...
+```
+
 ## After
 
 ```js
+const { LambdaClient, InvokeCommand } = require("@aws-sdk/client-lambda");
+const { CognitoIdentityProviderClient, AdminGetUserCommand } = require("@aws-sdk/client-cognito-identity-provider");
+const jose = require('node-jose');
+
 exports.handler = (event, context, callback) => {
-    let req;
-
-    try {
-        req = JSON.parse(event.body);
-    } catch (e) {
-        console.log("Invalid JSON request:", e.message);
-        return callback(null, {
-            statusCode: 400,
-            headers: { "Access-Control-Allow-Origin": "*" },
-            body: JSON.stringify({
-                status: "err",
-                msg: "Invalid request format"
-            })
-        });
-    }
-
+    // console.log(JSON.stringify(event));
+    var req = JSON.parse(event.body);
     var headers = event.headers;
 }
-...
+```
 
 ## Specific changes made:
-Added a try-catch block around JSON.parse(event.body)
-Changed unhandled exception into a controlled error response
-Returned a safe message: Invalid request format
+
+- Removed: `const serialize = require('node-serialize');`
+
+- Changed: `serialize.unserialize(event.body)` → `JSON.parse(event.body)`
+
+- Changed: `serialize.unserialize(event.headers)` → `event.headers`
